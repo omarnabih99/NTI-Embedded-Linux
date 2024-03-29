@@ -10,7 +10,7 @@ We need to setup the U-boot bootloader in order to use it on our target machine
 
 ```bash
 # at the home directory
-git clone git clone git@github.com:u-boot/u-boot.git
+git clone git@github.com:u-boot/u-boot.git
 
 # Now, you will find the cloned u-boot directory on your home directory
 cd u-boot/
@@ -59,6 +59,15 @@ make menuconfig
 - [ ] Support **FAT file system**
   - [ ] Configure the FAT interface to **mmc**
   - [ ] Configure the partition where the fat is stored to **0:1**
+
+### Build the U-boot 
+
+```bash
+# while on the u-boot directory
+cd ~/u-boot
+
+#build the u-boot files
+make
 
 ## SD Card
 
@@ -172,7 +181,7 @@ lsblk
 
 2. !!!Be careful!!!, the two mkfs lines will format the SD card. So, we use them as initialization only then cooment them in the script to not to delete your files stored in the SD card every time you run this script after restarting your host machine unless you don't want to format them and delete this data.
 
-3. During working on QEMU you may face EXT4 errors due to data corruption, error in checksum, ... ,etc. In this case you have to re-format your partitions using the two mkfs lines in the script and recopy your files into them again.
+3. During working on QEMU you may face EXT4 errors due to data corruption, error in checksum, ...,etc. In this case you have to re-format your partitions using the two mkfs lines in the script and recopy your files into them again.
 
 4. Modify all the paths in the script to match your own paths.
 
@@ -186,6 +195,22 @@ In this section, we will test the **u-boot** and **the virtual SD card**
 # Go to your home directory and move the u-boot directory into the EmulateSD directory
 cd ~
 mv -r u-boot EmulateSD
+
+# Go to the EmulateSD directory then sd directory
+cd EmulateSD/sd
+
+# Touch a text file to act as a kernel image just to test the SD card and u-boot
+touch zImage
+
+# Touch another text file to act as a dtb file 
+touch vexpress.dtb
+
+# Edit these 2 files
+echo "Hi, This is the kernel using SD card">>zImage
+echo "Hi, this is the dtb using SDcard">>vexpress.dtb
+
+# Go back to the EmulateSD directory
+cd ../
 ```
 
 Start the Qemu with the **Emulated SD card**
@@ -195,6 +220,33 @@ qemu-system-arm -M vexpress-a9 -m 128M -nographic \
 -kernel u-boot/u-boot \
 -sd sd.img
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
