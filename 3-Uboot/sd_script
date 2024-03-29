@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Find the next available loop device
+loop_device=`losetup -f`
+
+# Associate the loop device with the image file
+sudo losetup --show --partscan $loop_device ~/EmulateSD/sd.img
+
+# Create filesystems on partitions
+#sudo mkfs.vfat -F 16 -n boot ${loop_device}p1
+#sudo mkfs.ext4 -L rootfs ${loop_device}p2
+
+# Create mount points and mount partitions
+sudo mount ${loop_device}p1 ~/EmulateSD/sd
+sudo mount ${loop_device}p2 ~/EmulateSD/sd2
+
+# Set environment variables
+export ARCH=arm
+export CROSS_COMPILE=~/x-tools/arm-cortexa9_neon-linux-musleabihf/bin/arm-cortexa9_neon-linux-musleabihf-
+
+# start a child shell to inherit the environment variables
+bash
