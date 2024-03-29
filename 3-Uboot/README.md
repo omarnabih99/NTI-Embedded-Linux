@@ -63,11 +63,12 @@ make menuconfig
 ### Build the U-boot 
 
 ```bash
-# while on the u-boot directory
+# go to the u-boot directory
 cd ~/u-boot
 
 #build the u-boot files
 make
+```
 
 ## SD Card
 
