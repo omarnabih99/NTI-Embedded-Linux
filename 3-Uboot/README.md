@@ -229,6 +229,24 @@ This command will list the components of the partition 1 in the SD card which co
 ```bash
 ls mmc 0:1
 ```
+Now, we want to load these files-zImage and dtb-into the virtual board memory:
+
+```bash
+fatload mmc 0:1 $kernel_addr_r zImage
+fatload mmc 0:1 $fdt_addr_r vexpress.dtb
+```
+
+Then, we want to check that the files are loaded to the memory sucessfulyy:
+
+```bash
+md $kernel_addr_r
+md $fdt_addr_r
+```
+
+These two commands will dispaly the memory starting from the given address to a certain size.
+
+Now, we have a working virtual SD card.
+
 
 
 
