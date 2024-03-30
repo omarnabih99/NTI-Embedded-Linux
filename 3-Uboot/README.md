@@ -247,6 +247,37 @@ These two commands will dispaly the memory starting from the given address to a 
 
 Now, we have a working virtual SD card.
 
+Sometimes there maybe a case that we can't use SD card. So, we can use the tftp service to load the kernel and dtb files remotely without using the SD card.
+
+### Start the QEMU with **the tftp service**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
