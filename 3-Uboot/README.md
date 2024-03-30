@@ -214,7 +214,7 @@ echo "Hi, this is the dtb using SDcard">>vexpress.dtb
 cd ../
 ```
 
-Start the Qemu with the **Emulated SD card**
+### Start the Qemu with the **Emulated SD card**
 
 ```bash
 qemu-system-arm -M vexpress-a9 -m 128M -nographic \
@@ -222,7 +222,13 @@ qemu-system-arm -M vexpress-a9 -m 128M -nographic \
 -sd sd.img
 ```
 
+Inside the QEMU, we want to check the SD card that it is functioning properly:
 
+This command will list the components of the partition 1 in the SD card which contains zImage and dtb files
+
+```bash
+ls mmc 0:1
+```
 
 
 
