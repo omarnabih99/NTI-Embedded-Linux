@@ -217,6 +217,9 @@ cd ../
 ### Start the Qemu with the **Emulated SD card**
 
 ```bash
+# Go to EmulateSD directory
+cd ~/EmulateSD
+# run QEMU
 qemu-system-arm -M vexpress-a9 -m 128M -nographic \
 -kernel u-boot/u-boot \
 -sd sd.img
@@ -229,6 +232,8 @@ This command will list the components of the partition 1 in the SD card which co
 ```bash
 ls mmc 0:1
 ```
+In u-boot, there are two envirnment variables stores the memory addresses where the `Kernel` image and `dtb` file are stored which are : **kernel_addr_r** and **fdt_addr_r**.
+
 Now, we want to load these files-zImage and dtb-into the virtual board memory:
 
 ```bash
@@ -249,109 +254,113 @@ Now, we have a working virtual SD card.
 
 Sometimes there maybe a case that we can't use SD card. So, we can use the tftp service to load the kernel and dtb files remotely without using the SD card.
 
-### Start the QEMU with **the tftp service**
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Start the QEMU with **the TFTP service**
+
+TFTP stands for Trivial File Transfer Protocol. It's a simple protocol used for transferring files between devices on a network.
+
+TFTP operates on UDP (User Datagram Protocol) **port 69** and is often used for transferring small files, such as **configuration files**, **boot images**, or **firmware updates**, especially in environments where more complex protocols like FTP are not practical.
+
+**!! This step is needed if you didn't set a password for the root user before !!**
+
+```bash
+# Set a password for the root user
+sudo passwd root
+```
+
+#### Initialize TFTP Protocol
+
+##### Ubuntu
+
+```bash
+#Switch to root
+sudo su
+#Make sure you are connected to internet
+ping google.com
+#Download tftp protocol
+sudo apt-get install tftpd-hpa
+#Check the tftp ip address
+ip addr `will be needed`
+#Change the configuration of tftp
+nano /etc/default/tftpd-hpa
+	#write inside the file
+    tftf_option = “--secure –-create”
+#Restart the protocal
+Systemctl restart tftpd-hpa
+#Make sure the tftp protocol is running
+Systemctl status tftpd-hpa
+#Change the file owner
+cd /srv
+chown tftp:tftp tftp 
+#Move your image or file to the server
+cp [File name] /srv/tftp
+```
+##### Create a virtual Ethernet for QEMU
+
+**!! This section for `QEMU` Emulator using only !!**
+
+Create a script `qemu-ifup`
+
+```bash
+# Go to EmulateSD directory
+cd ~/EmulateSD
+# Create the qemu-ifup text file
+touch qemu-ifup
+```
+Copy this script into the text file
+```bash
+#!/bin/sh
+ip a add 192.168.0.1/24 dev $1
+ip link set $1 up
+```
+Make the text file executable
+```bash
+sudo chmod +x qemu-ifup
+```
+
+**!! You can assign any ip address you want without modyfing the net mask, but make sure that the ip address of the `QEMU` will have the same network ID (first three fields in this ip address). ex: 192.168.0.2/24 !!**
+
+##### Start QEMU
+
+In order to start `QEMU` with the new virtual Ethernet.
+
+```bash
+# Go to EmulateSD directory
+cd ~/EmulateSD
+# Start Qemu
+sudo qemu-system-arm -M vexpress-a9 -m 128M -nographic \
+-kernel u-boot/u-boot \
+-sd sd.img \
+-net tap,script=./qemu-ifup -net nic
+```
+Now, `QEMU` has started. So, we need to configure two environment variables: ipaddr and serverip.
+
+`ipaddr` stores the ip address of the u-boot.
+
+`serverip` stores the ip address of the server where the files are stored.
+
+```bash
+#Apply ip address for embedded device
+setenv ipaddr [chose]
+#Set the server ip address that we get from previous slide
+setenv serverip [host ip address]
+
+#### WARNING ####
+#the ip address should has the same net mask
+
+```
+##### Load the files trhough TFTP
+
+Now we have the embedded device connected to the `QEMU` virtual Ethernet.
+
+```bash
+# addressRam is a variable knowen from bdinfo commend
+tftp $kernel_addr_r zImage
+tftp $fdt_addr_r vexpress.dtb
+```
+
+The two file are supposed to be loaded in the memory. We can check that:
+
+```bash
+md $kernel_addr_r
+md $fdt_addr_r
+```
