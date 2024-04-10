@@ -343,7 +343,7 @@ Now, `QEMU` has started. So, we need to configure two environment variables: ipa
 setenv ipaddr [chose]
 #Set the server ip address that we get from previous slide
 setenv serverip [host ip address]
-
+```
 #### WARNING ####
 #the ip address should has the same net mask
 
@@ -353,7 +353,7 @@ setenv serverip [host ip address]
 Now we have the embedded device connected to the `QEMU` virtual Ethernet.
 
 ```bash
-# addressRam is a variable knowen from bdinfo commend
+# addressRam is a variable known from bdinfo command
 tftp $kernel_addr_r zImage
 tftp $fdt_addr_r vexpress.dtb
 ```
