@@ -191,7 +191,7 @@ qemu-system-arm -M vexpress-a9 -m 128M -nographic \
 -sd sd.img
 ```
 
-## Set Bootargs un U-boot
+## Set Bootargs in U-boot
 
 ```bash
 # console is set depends on the machine
