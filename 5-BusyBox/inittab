@@ -1,0 +1,8 @@
+#execute rcS1 when the system start
+::sysinit:/etc/init.d/rcS
+
+#ask to enter the shell
+console::askfirst:-/bin/sh
+
+#Execute when the system will go down
+::shutdown:/etc/init.d/rcK
