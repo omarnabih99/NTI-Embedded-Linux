@@ -46,6 +46,23 @@ Loaded in in `User Space`.
 
 - Device Driver codes are compiled by the kernel `Makefile` not the `User Space` compiler.
 
-![Arch]()
+- Kernel by default doesn't see the GNU C Library
+
+- That means we can't -for example- write `printf()` in `kernel space drivers`.
+
+- But linux as a distro covers everything in GNU C Library by creating a version of it for the `Kernel Space`.
+
+- So, instead of using -for example- `printf()`, we will use `printk()`.
+
+- Therefore, we won't use anything from GNU C Library.
+
+    ![Arch](image.png)
+
+## Pseudo devices
+
+- They are files usually located in `/dev`. They are like a device files, but instead of acting as a bridge between the `Operating System` and `Hardware`.
+
+- They don't really exist as real devices.
+
 
 
