@@ -64,5 +64,49 @@ Loaded in in `User Space`.
 
 - They don't really exist as real devices.
 
+## Kernel Headers
+
+- Linux kernel headers are the essential files needed for compiling and linking programs that interface directly with the Linux kernel. They contain declarations of structures, constants, and functions that user-space programs can use to interact with the kernel. These headers define the interfaces that applications, device drivers, and other kernel modules use to communicate with the kernel.
+
+- Having the kernel headers installed is especially important when compiling certain software packages, like device drivers or system-level utilities, as they often need to interact with the kernel directly. Without the appropriate headers, compiling such software would not be possible, or it might result in errors due to missing function declarations or constant definitions.
+
+### Installing Kernel Headers
+
+```bash
+sudo apt get-update
+sudo apt install linux-headers-$(uname -r)
+```
+### Locating installed Kernel Headers
+
+- You can know your linux version through: 
+
+```bash
+uname -r
+```
+
+- You will find the installed headers according to your linux version:
+
+```bash
+# depends on your linux version
+cd /usr/src/linux-headers-6.5.0-27-generic/include
+```
+
+- You will notice that the directories in this path are symlinked to directories in another path which is `linux-hwe-6.5-headers-6.5.0-27/include/`
+
+```bash
+# In /usr/src/linux-headers-6.5.0-27-generic/include
+ls -lh
+```
+for example: `linux -> ../../linux-hwe-6.5-headers-6.5.0-27/include/linux`
+
+- `include/linux`: This directory contains general-purpose kernel headers, including those related to core kernel functionality.
+
+- `include/uapi/linux`: This directory contains headers defining user-space APIs, including those related to device drivers that user-space programs may interact with.
+
+- Subdirectories corresponding to specific subsystems: For example, headers related to networking would be found in `include/net`, while headers related to block devices might be found in `include/block`.
+
+
+
+
 
 
