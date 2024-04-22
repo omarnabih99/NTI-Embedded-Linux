@@ -120,17 +120,17 @@ for example: `linux -> ../../linux-hwe-6.5-headers-6.5.0-27/include/linux`
 ls -lh /dev/tty*
 ```
 
-- This will show you and device nodes starting with tty.
+- This will show you device nodes starting with tty.
 
 - You will find for example:
 
-crw--w---- 1 root      tty     `4`,  `0` Apr 22 21:07 /dev/tty0
+    crw--w---- 1 root      tty     `4`,  `0` Apr 22 21:07 /dev/tty0
 
-crw--w---- 1 root      tty     `4`,  `1` Apr 22 21:07 /dev/tty1
+    crw--w---- 1 root      tty     `4`,  `1` Apr 22 21:07 /dev/tty1
 
-crw--w---- 1 root      tty     `4`, `10` Apr 22 21:07 /dev/tty10
+    crw--w---- 1 root      tty     `4`, `10` Apr 22 21:07 /dev/tty10
 
-crw--w---- 1 root      tty     `4`, `11` Apr 22 21:07 /dev/tty11
+    crw--w---- 1 root      tty     `4`, `11` Apr 22 21:07 /dev/tty11
 
 - The device node `tty0` has major number of `4` and minor number of `0`. The device node for `tty1` has major number of `4` and minor number of `1` and so on.
 
