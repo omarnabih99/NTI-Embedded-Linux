@@ -5,11 +5,15 @@
 #include <linux/cdev.h>
 #include <linux/device/class.h>
 
+#define KERNEL_BUFFER_SIZE 15
+
 /* Meta Information */
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Omar Nabih");
 MODULE_DESCRIPTION("A trivial Psuedo device driver");
 
+// Create the buffer used in my_read() and my_write()
+static unsigned char kernelBuffer[KERNEL_BUFFER_SIZE] = "";
 // Implement my_open() which will be called when an open syscall is invoked
 static int my_open(struct inode* deviceFile, struct file* instance)
 {
@@ -22,12 +26,85 @@ static int my_release(struct inode* deviceFile, struct file* instance)
     printk("%s dev_nr - close was called \n", __FUNCTION__);
     return 0;
 }
+// Implement my_read() function which will be called when a read syscall is invoked
+ssize_t my_read(struct file* file, char __user* userBuffer, size_t count, loff_t* offset)
+{
+    int notCopied;
+
+    printk("my_read is called \n");
+
+    printk("The count to read: %ld \n", count);
+
+    printk("The offset to read: %lld \n", *offset);
+
+    // a logic to handle the count in read function
+    if ((count + *offset) > KERNEL_BUFFER_SIZE)
+    {
+        count = KERNEL_BUFFER_SIZE - *offset;
+    }
+
+    notCopied = copy_to_user(userBuffer, &kernelBuffer[*offset], count);
+    if (notCopied)
+    {
+        printk("not copied is: %d \n", notCopied);
+        return -1;
+    }
+
+    // if the kernel buffer size is larger than the read count, this function will be called more than one time
+    // so, we will assign the current count to the offset to ensure that it will start at the end of the previous call
+    *offset = count;
+
+    printk("already copied is: %ld \n", count);
+
+    return count;
+}
+// Implement my_write() function which will be called when a write syscall is invoked
+ssize_t my_write(struct file* file, const char __user* userBuffer, size_t count, loff_t* offset)
+{
+    int notWritten;
+
+    printk("my_write is called \n");
+
+    printk("The count to write: %ld \n", count);
+
+    printk("The offset to write: %lld \n", *offset);
+
+    // a logic to handle the count in write function
+    if ((count + *offset) > KERNEL_BUFFER_SIZE)
+    {
+        count = KERNEL_BUFFER_SIZE - *offset;
+    }
+    if (!count)
+    {
+        printk("No space is left in the buffer \n");
+        return -1;
+    }
+
+    notWritten = copy_from_user(&kernelBuffer[*offset], userBuffer, count);
+    if (notWritten)
+    {
+        printk("not written is: %d \n", notWritten);
+        return -1;
+    }
+
+    // if the kernel buffer size is larger than the read count, this function will be called more than one time
+    // so, we will assign the current count to the offset to ensure that it will start at the end of the previous call
+    *offset = count;
+
+    printk("already written is: %ld \n", count);
+
+    printk("The message is: %s \n", kernelBuffer);
+
+    return count;
+}
 // create an instace of file_operations struct
 struct file_operations ST_MyFops =
 {
     .owner = THIS_MODULE,
     .open = my_open,
-    .release = my_release
+    .release = my_release,
+    .read = my_read,
+    .write = my_write
 };
 // create a pointer to this struct
 struct file_operations* ST_MyFopsPtr = &ST_MyFops;
