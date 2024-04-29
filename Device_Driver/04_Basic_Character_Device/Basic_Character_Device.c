@@ -80,6 +80,8 @@ ssize_t my_write(struct file* file, const char __user* userBuffer, size_t count,
         return -1;
     }
 
+    memset(kernelBuffer, 0, count);
+
     notWritten = copy_from_user(&kernelBuffer[*offset], userBuffer, count);
     if (notWritten)
     {
