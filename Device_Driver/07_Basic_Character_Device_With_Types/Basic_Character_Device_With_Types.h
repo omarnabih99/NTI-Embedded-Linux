@@ -9,7 +9,7 @@
 #include <linux/stat.h>
 
 #define BASE_MINOR 0
-#define NUMBER_OF_DRIVERS 1
+#define NUMBER_OF_CORRESPONDING_DEVICES 1
 #define NUMBER_OF_DEVICES 4
 
 #define DEV0_BUFFER_SIZE 1024
@@ -43,20 +43,5 @@ typedef struct ST_charDriverPrivateData_t
     struct device* ST_My_Device_Ptr;
     ST_charDevicePrivateData_t ST_characterDevices [NUMBER_OF_DEVICES];
 }ST_charDriverPrivateData_t;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
