@@ -7,7 +7,7 @@
 ***************************************************************************************************************************************************/
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Omar Nabih");
-MODULE_DESCRIPTION("A trivial Psuedo device driver");
+MODULE_DESCRIPTION("A generic Psuedo device driver");
 
 
 
@@ -19,10 +19,28 @@ char Device_Buffer_Dev1[DEV0_BUFFER_SIZE]= "";
 char Device_Buffer_Dev2[DEV0_BUFFER_SIZE]= "";
 char Device_Buffer_Dev3[DEV0_BUFFER_SIZE]= "";
 
-// Implement Check_Permissions function
-int Check_Permissions (void)
+// TODO: Implement Check_Permissions function
+int Check_Permissions (int devicePermissions, fmode_t fileMode)
 {
-    return 0;
+    // 1- if the device permissions is read/write -> you don't need to check the access mode
+    if (devicePermissions == RDWR)
+    {
+        return 0;
+    }
+
+    // 2- if the device permissions is read only
+    if ( (devicePermissions == RDONLY) && (fileMode & FMODE_READ) && !(fileMode & FMODE_WRITE))
+    {
+        return 0;
+    }
+
+    // 3- if the device permissions is write only
+    if ( (devicePermissions == WRONLY) && (fileMode & FMODE_WRITE) && !(fileMode & FMODE_READ))
+    {
+        return 0;
+    }
+
+    return -1;
 }
 
 // Implement my_open() which will be called when an open syscall is invoked
@@ -40,7 +58,7 @@ static int my_open(struct inode* deviceInode, struct file* deviceFile)
     characterDevicePrivateDataPtr = container_of(deviceInode -> i_cdev, ST_charDevicePrivateData_t, ST_cDev);
     deviceFile -> private_data = characterDevicePrivateDataPtr;
 
-    checkPermissionsReturn = Check_Permissions();
+    checkPermissionsReturn = Check_Permissions(characterDevicePrivateDataPtr -> permissions, deviceFile -> f_mode);
     if(checkPermissionsReturn == 0)
     {
         printk("Device is opened sucessfully \n");
@@ -132,6 +150,8 @@ ssize_t my_write(struct file* deviceFile, const char __user* userBuffer, size_t 
         return -1;
     }
 
+    // TODO: Handle overwrite and append
+
     memset(characterDevicePrivateDataPtr -> buffer, 0, maxSize);
 
     notWritten = copy_from_user(characterDevicePrivateDataPtr -> buffer + (*offset), userBuffer, count);
@@ -180,28 +200,28 @@ ST_charDriverPrivateData_t ST_myDriver =
             .name = "Basic_Device0",
             .buffer = Device_Buffer_Dev0,
             .size = DEV0_BUFFER_SIZE,
-            //.permissions = RDONLY
+            .permissions = RDONLY
         },
         [Device1] = 
         {
             .name = "Basic_Device1",
             .buffer = Device_Buffer_Dev1,
             .size = DEV1_BUFFER_SIZE,
-            //.permissions = WRONLY
+            .permissions = WRONLY
         },
         [Device2] = 
         {
             .name = "Basic_Device2",
             .buffer = Device_Buffer_Dev2,
             .size = DEV2_BUFFER_SIZE,
-            //.permissions = RDWR
+            .permissions = RDWR
         },
         [Device3] = 
         {
             .name = "Basic_Device3",
             .buffer = Device_Buffer_Dev3,
             .size = DEV3_BUFFER_SIZE,
-            //.permissions = RDWR
+            .permissions = RDWR
         },
 
     }

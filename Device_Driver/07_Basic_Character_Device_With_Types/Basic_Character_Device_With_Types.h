@@ -17,6 +17,10 @@
 #define DEV2_BUFFER_SIZE 1024
 #define DEV3_BUFFER_SIZE 512
 
+#define RDONLY 0x01
+#define WRONLY 0x10
+#define RDWR   0x11
+
 typedef enum EN_Devices_t
 {
     Device0,
