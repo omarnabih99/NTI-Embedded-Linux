@@ -18,8 +18,7 @@ char Device_Buffer_Dev0[DEV0_BUFFER_SIZE]= "";
 char Device_Buffer_Dev1[DEV0_BUFFER_SIZE]= "";
 char Device_Buffer_Dev2[DEV0_BUFFER_SIZE]= "";
 char Device_Buffer_Dev3[DEV0_BUFFER_SIZE]= "";
-
-// TODO: Implement Check_Permissions function
+// Implement check_permissions() function to check the matching between the access mode and the device permissions
 int Check_Permissions (int devicePermissions, fmode_t fileMode)
 {
     // 1- if the device permissions is read/write -> you don't need to check the access mode
@@ -150,9 +149,14 @@ ssize_t my_write(struct file* deviceFile, const char __user* userBuffer, size_t 
         return -1;
     }
 
-    // TODO: Handle overwrite and append
-
-    memset(characterDevicePrivateDataPtr -> buffer, 0, maxSize);
+    if (deviceFile -> f_flags & O_APPEND)
+    {
+        *offset = characterDevicePrivateDataPtr ->g_offset;
+    }
+    else
+    {
+        memset(characterDevicePrivateDataPtr -> buffer, 0, maxSize);
+    }
 
     notWritten = copy_from_user(characterDevicePrivateDataPtr -> buffer + (*offset), userBuffer, count);
     if (notWritten)
@@ -164,6 +168,8 @@ ssize_t my_write(struct file* deviceFile, const char __user* userBuffer, size_t 
     // if the kernel buffer size is larger than the read count, this function will be called more than one time
     // so, we will assign the current count to the offset to ensure that it will start at the end of the previous call
     *offset += count;
+
+    characterDevicePrivateDataPtr ->g_offset = *offset;
 
     printk("already written is: %ld \n", count);
 

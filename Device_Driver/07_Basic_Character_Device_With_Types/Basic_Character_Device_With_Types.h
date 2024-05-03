@@ -32,10 +32,10 @@ typedef enum EN_Devices_t
 typedef struct ST_charDevicePrivateData_t
 {
     const char* name;
-    unsigned int id;
     char* buffer;
-    int permissions;
+    unsigned int g_offset;
     size_t size;
+    int permissions;
     struct cdev ST_cDev;
 }ST_charDevicePrivateData_t;
 
