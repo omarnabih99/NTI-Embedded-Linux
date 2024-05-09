@@ -11,9 +11,9 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-#define BASE_MINOR 0
+#define BASE_MINOR                      0
 #define NUMBER_OF_CORRESPONDING_DEVICES 1
-#define NUMBER_OF_DEVICES 3
+#define NUMBER_OF_DEVICES               3
 
 #define LED0_BUFFER_SIZE 2
 #define LED1_BUFFER_SIZE 2
@@ -29,9 +29,9 @@
 #define HIGH 1
 #define LOW  0
 
-#define LED0_pin 2
-#define LED1_pin 3
-#define LED2_pin 4
+#define LED0_pin    2
+#define LED1_pin    3
+#define LED2_pin    4
 
 typedef enum EN_Devices_t
 {
@@ -45,12 +45,12 @@ typedef struct ST_PlatformDeviceData_t
     const char*     name;
     size_t          size;
     int             permissions;
+    unsigned int    pin;
 }ST_PlatformDeviceData_t;
 
 typedef struct ST_charDevicePrivateData_t
 {
     dev_t                           deviceNumber;
-    unsigned int                    pin;
     char*                           buffer;
     unsigned int                    g_offset;
     struct cdev                     ST_cDev;

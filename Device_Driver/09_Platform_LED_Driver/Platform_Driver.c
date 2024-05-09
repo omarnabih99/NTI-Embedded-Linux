@@ -164,11 +164,11 @@ ssize_t my_write(struct file* deviceFile, const char __user* userBuffer, size_t 
     switch(characterDevicePrivateDataPtr ->buffer[0])
     {
         case '0':
-                gpio_set_value(characterDevicePrivateDataPtr ->pin, LOW);
+                gpio_set_value(characterDevicePrivateDataPtr->ST_Device_Platform_Data.pin, LOW);
                 break;
         
         case '1':
-                gpio_set_value(characterDevicePrivateDataPtr ->pin, HIGH);
+                gpio_set_value(characterDevicePrivateDataPtr ->ST_Device_Platform_Data.pin, HIGH);
                 break;
     }
 
@@ -248,6 +248,9 @@ int Platform_my_probe(struct platform_device* ST_Platform_Device_LEDs)
     ST_LEDsPrivateDataPtr->ST_Device_Platform_Data.permissions = ST_LEDsPlatformDataPtr->permissions;
     printk("Device permissions is: %d \n", ST_LEDsPrivateDataPtr->ST_Device_Platform_Data.permissions);
 
+    ST_LEDsPrivateDataPtr ->ST_Device_Platform_Data.pin = ST_LEDsPlatformDataPtr->pin;
+    printk("%s is connected on GPIO%d", ST_LEDsPrivateDataPtr->ST_Device_Platform_Data.name, ST_LEDsPrivateDataPtr ->ST_Device_Platform_Data.pin);
+
 
 
     // 3- dynamically allocate memory for the device buffer using size information from
@@ -296,12 +299,19 @@ int Platform_my_probe(struct platform_device* ST_Platform_Device_LEDs)
         }    
 
 
-    // 7- pass the pointer to device private data struct to remove() function
+    // 7- Initialize LED pins and set direction to output
+    gpio_request(ST_LEDsPrivateDataPtr ->ST_Device_Platform_Data.pin, "LED_gpio_pin");
+    gpio_direction_output(ST_LEDsPrivateDataPtr ->ST_Device_Platform_Data.pin, LOW);
+
+
+    // 8- pass the pointer to device private data struct to remove() function
     //ST_Platform_Device_LEDs->dev.driver_data = ST_LEDsPrivateDataPtr;
     dev_set_drvdata(&ST_Platform_Device_LEDs->dev, ST_LEDsPrivateDataPtr);
 
-    // 8- increment the number of devices
+
+    // 9- increment the number of devices
     ST_myDriver.deviceCount++;
+
 
     return 0;
 }
@@ -315,20 +325,23 @@ int Platform_my_remove (struct platform_device* ST_Platform_Device_LEDs)
     // 1- get the pointer to device private data struct
     ST_LEDsPrivateDataPtr = (ST_charDevicePrivateData_t*) dev_get_drvdata(&ST_Platform_Device_LEDs->dev);
 
+    // 2- free the gpio pins
+    gpio_set_value(ST_LEDsPrivateDataPtr ->ST_Device_Platform_Data.pin, LOW);
+    gpio_free(ST_LEDsPrivateDataPtr ->ST_Device_Platform_Data.pin);
 
-    // 2- remove a device that was created by device_create()
+    // 3- remove a device that was created by device_create()
     device_destroy(ST_myDriver.ST_My_Class_Ptr, ST_LEDsPrivateDataPtr->deviceNumber);
 
 
-    // 3- remove the cdev struct from the system
+    // 4- remove the cdev struct from the system
     cdev_del(&ST_LEDsPrivateDataPtr->ST_cDev);
 
 
-    // 4- free the memory held by the device (device private data and device buffer)
+    // 5- free the memory held by the device (device private data and device buffer)
     kfree(ST_LEDsPrivateDataPtr->buffer);
     kfree(ST_LEDsPrivateDataPtr);
 
-    // 5- decrement the device counter    
+    // 6- decrement the device counter    
     ST_myDriver.deviceCount--;
 
 

@@ -30,21 +30,24 @@ ST_PlatformDeviceData_t ST_Platform_Device_Data[NUMBER_OF_DEVICES] =
     {
         .name = "LED_0",
         .size = LED0_BUFFER_SIZE,
-        .permissions = RDWR
+        .permissions = RDWR,
+        .pin = LED0_pin
     },
 
     [LED_1] =
     {
         .name = "LED_1",
         .size = LED1_BUFFER_SIZE,
-        .permissions = RDWR
+        .permissions = RDWR,
+        .pin = LED1_pin
     },
 
     [LED_2] = 
     {
         .name = "LED_2",
         .size = LED2_BUFFER_SIZE,
-        .permissions = RDWR
+        .permissions = RDWR,
+        .pin = LED2_pin
     }
 };
 
