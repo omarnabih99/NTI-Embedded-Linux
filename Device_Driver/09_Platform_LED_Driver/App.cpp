@@ -54,7 +54,7 @@ int main ()
     LED_1.WriteFile(LOW);
     LED_2.WriteFile(LOW);
 
-    // 3- control the LEDs based on the intensity level and the current level
+    // 3- control the LEDs based on the intensity level and the travel flag
     int intensityLevel;
 
     std::string currentLevel;
